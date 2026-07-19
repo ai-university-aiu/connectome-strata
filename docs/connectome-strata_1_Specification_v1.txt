@@ -1,0 +1,219 @@
+CONNECTOME-STRATA SPECIFICATION  (v1)
+
+Repository: connectome-strata
+Document: Specification (file 1 of 6)
+Version: 1
+
+This document follows the Specification phase of the SPARC methodology, where
+SPARC stands for Specification, Pseudocode, Architecture, Refinement, and
+Completion. The Specification phase defines what the repository must do, and why,
+before any judgement is made about how. This repository is FROZEN: its code and
+behaviour are fixed and immutable. This document DESCRIBES what was built and
+why. It proposes no change to the code, and adding these documentation files
+under docs/ touches no code, which preserves that frozen guarantee.
+
+
+PART ONE - WHAT THIS REPOSITORY IS
+
+connectome-strata is a granularity experiment. A granularity experiment holds
+one system constant and moves only one variable: how big a code module, called a
+pack, should be. The system held constant is a small working model of a brain
+circuit, the cortico-basal-ganglia-thalamo-cortical loop, which was first built
+as the Wave 2 vertical slice named connectome-proto-agi. The one variable moved
+here is the rule that decides where one pack ends and the next begins.
+
+This repository is the third and final arm of a three-arm comparison, called
+Wave 3c or the strata arm. The first arm (atomic) cut one pack per named
+construct. The second arm (loops) cut one pack per reentrant circuit. This arm
+cuts by a different rule:
+
+• One pack per Causalontology stratum.
+
+Causalontology is the data-structure language every part of the wider PrologAI
+platform speaks. A stratum, in Causalontology 2.0.0, is a named level of
+organisation with an ordinal number - for example the molecular level, the
+synaptic level, the brain-region level, the community level. The stratum is
+already a first-class kind in the data layer. So this arm tests a sharp
+question:
+
+• Is the data layer's own level boundary also the right CODE boundary?
+
+The answer this arm measured is a qualified yes. The deliverable of the
+repository is that finding, recorded in LEDGER.md and COMPARISON.md, not the code
+itself. The code exists to make the finding real, checkable, and honest.
+
+
+PART TWO - FUNCTIONAL REQUIREMENTS
+
+These are the behaviours the repository must deliver. Each is exercised by a
+runner or checker script under bin/ and is verifiable.
+
+• Requirement F1 - Close the reentrant loop. The model must tick the loop
+  cortex, then striatum, then thalamus, then back to cortex, for a requested
+  number of laps N, and prove it closed. The proof is exact: the run makes
+  three times N plus one hops, a token counter that rises by exactly one every
+  hop (a strictly increasing sequence from one up to three times N plus one),
+  the acting-region sequence cortex followed by N repetitions of striatum then
+  thalamus then cortex, and the cortex re-entering N plus one times (one seed
+  plus N laps).
+
+• Requirement F2 - Coordinate only through the shared Lattice. The three regions
+  must never call, address, or name one another. They communicate only by
+  posting a numbered phase cue (a positional slot number, never the name of who
+  picks it up) onto one shared coordination store called the Lattice, and by
+  waking on their own numbered cue. There must be zero region-to-region
+  references and no busy-polling (no spinning loop that burns processor time
+  waiting).
+
+• Requirement F3 - Carve the anatomy into one pack per stratum. The identical
+  anatomy of the slice must be divided into eight packs: three substrate packs
+  plus one pack for each Causalontology stratum the slice touches. Every stratum
+  pack owns exactly the constructs stamped at its level.
+
+• Requirement F4 - Reproduce the twenty-eight structure records byte for byte.
+  The five stratum packs, between them, must mint the same twenty-eight
+  Causalontology 2.0.0 records as the slice, with byte-identical content and
+  therefore byte-identical content-addressed identifiers.
+
+• Requirement F5 - Validate every structure record. Each of the twenty-eight
+  records must pass its JavaScript Object Notation (JSON) schema and the local
+  semantic rules of Causalontology 2.0.0. The layer-skipping cortisol relation
+  must classify as a skipping relation with no missing-mechanism gap, and the
+  Ed25519 provenance signature over that relation must verify.
+
+• Requirement F6 - Pass the strict layer rule with zero violations. Every
+  cross-pack dependency edge must run from a higher layer to a lower layer (a
+  downward edge). The five stratum packs take pack layers that track the
+  Causalontology stratum ordinals, so the layer order falls out of the data
+  layer's ordinals.
+
+• Requirement F7 - Ship an in-pack test for every pack. Each of the eight packs
+  must carry a Prolog Unit test (PLUnit) suite, so no pack can rot unseen.
+
+
+PART THREE - NON-FUNCTIONAL REQUIREMENTS
+
+These are the qualities the repository must have, beyond the behaviours above.
+
+• Grounding in Causalontology 2.0.0. The STRUCTURE of the model is expressed as
+  Causalontology 2.0.0 records with content-addressed identity computed by a
+  Secure Hash Algorithm 256-bit (SHA-256) digest over a canonical form. The
+  DYNAMICS (the numeric laws of dopamine, cortisol, and synaptic plasticity) are
+  deliberately kept native and ungrounded, because a rate constant or a
+  reward-prediction-error is a number evolving in time, not a structure record.
+  This split is the grounding rule.
+
+• The strict layer rule. The platform's layer construct assigns each pack a
+  layer number and forbids any pack from importing a pack in a higher layer.
+  This repository must satisfy it with no exceptions and, uniquely among the
+  three arms, must make the pack layers agree with the stratum ordinals.
+
+• The closure discipline. State is shared by stigmergy (leaving a mark in a
+  common medium, here the Lattice) rather than by direct messages between
+  regions. Reactivity is driven by notification (a region blocks on a private
+  queue and is woken by a write), never by busy-polling. This keeps the loop
+  glass-box: every hop is narrated on one legible line as it happens.
+
+• The one decomposition rule (this arm's governing invariant). The decomposition
+  must obey exactly one rule - one pack per Causalontology stratum - with no
+  exceptions smuggled in. Where the rule cannot cleanly place a construct (for
+  example a construct that spans two levels), the repository must record that as
+  a finding in LEDGER.md rather than bend the rule quietly. The honesty of the
+  measurement is the whole point of the arm.
+
+• The frozen-platform and honesty discipline. The wider PrologAI platform is
+  reused read-only and unmodified, referenced through the PROLOGAI_HOME
+  environment variable (an environment variable is a configuration value handed
+  to a program from outside its code; here it defaults to the local checkout).
+  Every gap the arm discovers is a Ledger entry, never a change to the platform.
+  Mentova and the earlier frozen spike are untouched.
+
+
+PART FOUR - OBJECTIVES, CONSTRAINTS, AND ACCEPTANCE CRITERIA
+
+Objective. Measure the one-pack-per-stratum decomposition rule against the
+identical slice, and answer whether the data layer's stratum boundary is the
+right code boundary, so the three-arm Wave 3 verdict can be written.
+
+Constraints.
+
+• The behaviour, the twenty-eight records, the dynamics, and the closure
+  mechanism are held constant and proven identical to the slice.
+
+• Only the pack boundaries move.
+
+• SWI-Prolog version 9.x is required. SWI-Prolog is the Prolog system this code
+  runs on.
+
+• No feature of the PrologAI platform may be modified to make the arm work.
+
+Acceptance criteria (the gates the repository must pass).
+
+• The loop runner (bin/run_slice.sh) exits with success and prints a proven
+  closure for N laps, with a trace byte-identical to the slice.
+
+• The layer checker (bin/check_layers.sh) reports zero upward edges across the
+  seven layers.
+
+• The coupling checker (bin/check_no_coupling.sh) reports zero region-to-region
+  references, and catches an injected cross-region call, so the check is not
+  vacuous.
+
+• The structure validator (bin/validate_structure.sh) reports all twenty-eight
+  records valid, the skip finding correct, and the signature verified.
+
+• The test runner (bin/run_tests.sh) reports every in-pack PLUnit suite passing.
+
+• The mini regression is green: forty of forty on the Abstraction and Reasoning
+  Corpus for Artificial General Intelligence version one (ARC-AGI-1) and twelve
+  of twelve on version two (ARC-AGI-2). This is a ten percent spot-check, not the
+  full benchmark; the full regression is deferred. The honest figures are 40/40
+  and 12/12, never rounded up.
+
+
+PART FIVE - REFLECTION ON THE MAIN DESIGN CHOICES
+
+The SPARC method asks the author to justify decisions and record the trade-offs
+that were accepted. The main choices in this repository are these.
+
+Choice one: cut by stratum rather than by construct or by circuit. The reason is
+that the stratum is already a kind in the data layer, so cutting by it tests
+whether the data boundary and the code boundary can be one seam. The trade-off
+accepted is that a construct which spans two strata (a port, a conduit, a
+bridge, or the ten-stratum cortisol skip) has no single-stratum home and must be
+assigned to the coarser stratum it touches. This is recorded honestly as finding
+STRATA-2, the central finding of the arm.
+
+Choice two: keep the native dynamics as an un-stratified substrate pack. The
+reason is the grounding rule: dopamine, cortisol, and plasticity are numeric
+laws, not structure, so they have no stratum and cannot live in a stratum pack.
+The trade-off is that the seam between a construct's structure and its dynamics,
+first seen in the slice as finding P1, is not healed by the stratum cut and is in
+fact made structurally unavoidable. This is recorded as finding STRATA-5.
+
+Choice three: keep the three co-stratal regions inside one region_stratum pack.
+The reason is that cortex, striatum, and thalamus are all brain regions at the
+same ordinal, nine, so the rule places them together as internal sections. The
+trade-off is that the runtime loop becomes intra-pack rather than cross-pack, so
+the code boundary does not separate the regions of the loop. This is recorded as
+finding STRATA-1, and the coupling checker was adapted to do intra-pack section
+analysis so the zero-reference guarantee still holds.
+
+Choice four: keep a shared minting vocabulary (causal_grounding) as substrate
+rather than duplicate it in every stratum pack. The reason is that the how of
+minting a record is vocabulary, not a construct, and duplicating it would be
+noise, not granularity. The trade-off is one extra substrate pack beneath the
+strata, which the layer rule blesses because every stratum pack imports it
+downward.
+
+The headline positive result, stated plainly, is that the layer order fell out of
+the stratum ordinals for free, and the ten-stratum cortisol skip - the construct
+the slice found hardest - is here the cleanest downward edge in the whole arm.
+The honest limits are the five Ledger findings. Together they answer the arm's
+question: the data layer's boundary is the right code boundary for the roughly
+two-thirds of constructs that sit at a single level, and the wrong one for the
+third that span levels and for the runtime that lives at one level.
+
+SPARC: this Specification is version 1, the first of the six-file set for
+connectome-strata (Specification v1, Pseudocode v1, Architecture v1, Refinement
+v1, Completion v1, Demonstration v1).

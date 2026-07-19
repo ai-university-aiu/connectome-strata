@@ -1,0 +1,148 @@
+CONNECTOME-STRATA COMPLETION  (v1)
+
+Repository: connectome-strata
+Document: Completion (file 5 of 6)
+Version: 1
+
+This document is the Completion phase of the SPARC methodology (Specification,
+Pseudocode, Architecture, Refinement, Completion). Completion states the delivered
+status: what passed, the final gate results in honest form, the platform the
+repository was built against, and the repository's honest limits. This repository
+is FROZEN evidence: its code and behaviour are immutable. This document records
+what was delivered and proposes no change to it.
+
+
+PART ONE - DELIVERED STATUS
+
+connectome-strata is delivered and complete as the third and final arm (Wave 3c,
+the strata arm) of the Wave 3 granularity experiment. It re-decomposes the Wave 2
+vertical slice under one rule - one pack per Causalontology stratum - holding the
+behaviour, the twenty-eight Causalontology 2.0.0 records, the dynamics, and the
+closure mechanism constant. The deliverable is the finding, recorded in LEDGER.md
+(the five STRATA findings) and COMPARISON.md (the three-way rubric), with the code
+as the evidence that makes the finding real.
+
+What was built:
+
+• Eight packs: three substrate (neural_lattice, causal_grounding, neurochemistry)
+  and five stratum packs (macromolecular_stratum, cellular_stratum,
+  synaptic_stratum, region_stratum, community_stratum).
+
+• Seven layers (zero through six), with the five stratum packs at layers two
+  through six tracking the Causalontology ordinals four, six, seven, nine, and
+  fourteen.
+
+• Twenty-eight Causalontology 2.0.0 structure records, written to structure/, with
+  three in macromolecular, one in cellular, six in synaptic, fourteen in region,
+  and four in community.
+
+• Five gate scripts and one runner under bin/, plus one in-pack PLUnit test suite
+  per pack.
+
+
+PART TWO - THE FINAL GATE RESULTS (honest form)
+
+All gates are green.
+
+• Loop closure (bin/run_slice.sh): the loop closes for N laps with a trace
+  byte-identical to the slice, proven by the four exact closure conditions (three
+  times N plus one hops, a strictly increasing token, the region sequence cortex
+  then N of striatum-thalamus-cortex, and N plus one cortex re-entries). Exit zero.
+
+• Layer rule (bin/check_layers.sh): zero upward edges across the seven layers, and
+  the stratum packs' layers track the Causalontology ordinals. Exit zero.
+
+• Coupling (bin/check_no_coupling.sh): zero region-to-region references, proven by
+  intra-pack section analysis of the region_stratum module, and shown non-vacuous
+  by catching an injected cross-region call. No busy-polling. Exit zero.
+
+• Structure validation (bin/validate_structure.sh): all twenty-eight records valid
+  against their Causalontology 2.0.0 JavaScript Object Notation (JSON) schemas and
+  the local semantic rules; the cortisol relation classifies as a skipping
+  relation with no missing-mechanism gap; the Ed25519 provenance signature
+  verifies. Exit zero.
+
+• Per-pack tests (bin/run_tests.sh): every one of the eight in-pack PLUnit suites
+  passes. Exit zero.
+
+• Mini regression: forty of forty on the Abstraction and Reasoning Corpus for
+  Artificial General Intelligence version one (ARC-AGI-1) and twelve of twelve on
+  version two (ARC-AGI-2). This is a ten percent spot-check. The full regression is
+  deferred. The honest figures are 40/40 and 12/12; they are never to be rounded to
+  the full-benchmark figures.
+
+
+PART THREE - THE PLATFORM IT WAS BUILT AGAINST
+
+The repository reuses the PrologAI platform read-only and unmodified, resolved
+through the PROLOGAI_HOME environment variable (default: the local checkout at
+/home/ccaitwo/PrologAI). It builds a SWI-Prolog (version 9.x) library path over
+the arm's eight packs plus these platform pieces:
+
+• library(lattice) and library(actors) for coordination and the cyclic actors.
+
+• library(causal_core) for the Causalontology 2.0.0 engine.
+
+• library(layer) for the strict layer-rule construct.
+
+• the causalontology_conformance harness under tests/ for the JSON-schema
+  interpreter, the pure-Prolog Ed25519 signing layer, and the seventeen schemas.
+
+The repository does not hardcode a platform commit hash of its own; it depends on
+the local checkout named by PROLOGAI_HOME. The connectome-strata repository itself
+was delivered as a single scaffold commit on its main branch (short identifier
+6018e63). Every gap it found in the platform is a Ledger entry, never a commit
+against the platform: PrologAI, Mentova, and the earlier frozen spike are
+untouched.
+
+
+PART FOUR - HONEST LIMITS (the open Ledger findings)
+
+The arm's answer is a qualified yes: cutting by stratum is the best of the three
+arms at grounding fit, but it does not come for free and does not cover every
+construct. The five open findings are the honest limits.
+
+• STRATA-1 - the loop's three regions are co-stratal (all brain regions at ordinal
+  nine), so one pack per stratum does not separate them; the runtime loop is
+  intra-pack, and the stratum boundary aligns with the data's cross-level
+  structure but not with the single-level runtime loop.
+
+• STRATA-2 - cross-stratal constructs (the ports, the two conduits, the bridge,
+  and the skipping cortisol relation) have no single-stratum home; the
+  Causalontology kinds split into stratum-local and stratum-spanning families, and
+  the rule fits only the former. This is the central finding of the arm.
+
+• STRATA-3 - nothing binds a pack's declared layer to its stratum ordinal; the
+  useful alignment is maintained by hand and unchecked. This is a facet of the
+  platform's layer construct that the later PrologAI work took up as its N6
+  layer-to-stratum binding.
+
+• STRATA-4 - one pack per stratum produces wildly uneven packs (cellular owns one
+  record; region owns fourteen plus the runtime); a named-but-unpopulated stratum
+  still costs a whole pack.
+
+• STRATA-5 - the structure-to-dynamics seam first seen in the slice (finding P1)
+  persists and is now structurally unavoidable, because the native dynamics have
+  no stratum and can never share a stratum pack with the structure they animate.
+
+The three-way reading these findings invite is a hybrid: cut structure by stratum
+(for the free layer order and the natural skip), keep the runtime loop as its own
+single-stratum unit, and give the stratum-spanning interfaces a first-class edge
+home rather than forcing them into a stratum. Weighing that synthesis is the job
+of the Wave 3 verdict, not of this arm; this arm's job was to measure the stratum
+cut, and it did.
+
+
+PART FIVE - FROZEN EVIDENCE
+
+This repository is frozen. Its code and behaviour are immutable and are preserved
+as evidence for the Wave 3 comparison. Nothing in this six-file documentation set
+changes the code; adding these files under docs/ touches no pack, predicate,
+checker, workflow, structure record, or test, which is what keeps the frozen
+guarantee intact. The measurement stands as recorded, and its honesty - green
+gates that can fail, byte-identity proofs, and five openly stated limits - is what
+makes it worth keeping.
+
+SPARC: this Completion is version 1, part of the six-file set for connectome-strata
+(Specification v1, Pseudocode v1, Architecture v1, Refinement v1, Completion v1,
+Demonstration v1).

@@ -1,0 +1,143 @@
+CONNECTOME-STRATA DEMONSTRATION  (v1)
+
+Repository: connectome-strata
+Document: Demonstration (file 6 of 6)
+Version: 1
+
+This document is a Demonstration plan. It is the owner's addition to the five
+SPARC phases (Specification, Pseudocode, Architecture, Refinement, Completion),
+not a SPARC phase itself. It is a plan of intent: what to run, what each step
+shows, which capabilities it exhibits, and what a viewer should conclude. It is
+not a finished or recorded demonstration, and it changes nothing - the repository
+is FROZEN and immutable.
+
+
+PART ONE - THE POINT OF THE DEMONSTRATION
+
+The purpose is to let a viewer see, in a few minutes, that connectome-strata is a
+real, running measurement of one decomposition rule - one pack per Causalontology
+stratum - and that its headline result and its honest limits are both true. The
+demonstration should leave the viewer able to answer one question for themselves:
+is the data layer's own level boundary also the right code boundary? The intended
+answer is a qualified yes, and the demonstration should make both the yes and the
+qualification visible.
+
+Before running, set the PROLOGAI_HOME environment variable to a local PrologAI
+checkout, or accept the default (/home/ccaitwo/PrologAI). SWI-Prolog version 9.x
+is required. Nothing in the platform is modified by any step below; every step is
+read-only against it.
+
+
+PART TWO - THE RUN SEQUENCE
+
+Run these from the repository root, in order. Each is a single command.
+
+Step one - tick the reentrant loop and read the narrated trace.
+
+    bin/run_slice.sh 8 5 0.4
+
+This ticks the cortex, striatum, thalamus, cortex loop for eight laps, with a
+cortisol event on lap five and a learning rate of four tenths. Every line of the
+output is one hop of the beat through the shared Lattice. What to watch for: the
+words "via lattice" on every hop (the three co-stratal regions share one pack, yet
+the beat always arrives through the shared store, never by one section calling
+another); the token rising by exactly one each hop; the dopamine
+reward-prediction-error starting high and shrinking as the cortex's prediction
+climbs to meet the reward; and, on lap five, a one-line banner marking the
+ten-stratum cortisol skip. At the end a closure verdict block reports the outcome,
+the hop count against the expectation, and a pass. This shows the behaviour is
+intact and the loop provably closes.
+
+Step two - run the strict layer rule over the arm's eight packs.
+
+    bin/check_layers.sh
+
+This loads the platform's unmodified layer construct and checks the arm. What to
+watch for: zero violations, and a report in which the stratum packs' layers (two
+through six) track the Causalontology ordinals (four, six, seven, nine, fourteen).
+This shows the arm's headline positive result: the layer order fell out of the
+data layer's stratum ordinals for free.
+
+Step three - prove the regions share only the Lattice.
+
+    bin/check_no_coupling.sh
+
+Because the three regions are co-stratal and live in one pack, this does
+intra-pack section analysis. What to watch for: a pass reporting zero
+region-to-region references. This shows the closure discipline holds even when the
+code cut did not separate the regions.
+
+Step four - validate every structure record, the skip, and the signature.
+
+    bin/validate_structure.sh
+
+This assembles the twenty-eight records from the five stratum packs and validates
+each against its Causalontology 2.0.0 JavaScript Object Notation (JSON) schema and
+the local semantic rules, then confirms the cortisol relation classifies as a
+skipping relation with no missing-mechanism gap and the Ed25519 signature
+verifies. What to watch for: twenty-eight records valid, the skip finding correct,
+the signature verified. This shows the data was held constant and is well-formed.
+
+Step five - run every pack's in-pack test suite.
+
+    bin/run_tests.sh
+
+What to watch for: all eight suites passing. This shows every pack is exercised and
+none can rot unseen.
+
+Optional step six - the regression guard. Through the platform's harness, the mini
+regression is forty of forty on the Abstraction and Reasoning Corpus for Artificial
+General Intelligence version one (ARC-AGI-1) and twelve of twelve on version two
+(ARC-AGI-2). This is a ten percent spot-check, not the full benchmark; the honest
+figures are 40/40 and 12/12. It shows the wider platform is not grossly broken.
+
+
+PART THREE - WHAT THE DEMONSTRATION EXHIBITS
+
+• A glass-box reentrant loop: every hop narrated as it happens, closure proven by
+  exact conditions rather than asserted.
+
+• Stigmergic coordination with notification: state shared through a common medium,
+  regions woken by writes, zero region-to-region references, no busy-polling.
+
+• Data-layer-aligned decomposition: the pack boundary is a Causalontology kind,
+  the layer order tracks the stratum ordinals, and the extreme layer-skip is the
+  cleanest downward edge.
+
+• Grounded structure with native dynamics: twenty-eight validated Causalontology
+  2.0.0 records for the structure, and un-stratified numeric laws for the dynamics.
+
+• Honest measurement: gates that can fail (one is proven non-vacuous by an injected
+  violation), byte-identity proofs against the slice, and five openly recorded
+  limits.
+
+
+PART FOUR - WHAT A VIEWER SHOULD CONCLUDE
+
+A viewer who runs the sequence should conclude that cutting by stratum genuinely
+aligns the code with the data layer for the constructs that sit at a single level:
+the layer order comes free from the ordinals, structure minting localises by
+level, and the hardest construct - the ten-stratum cortisol skip - becomes the
+most natural downward reference. And they should conclude, with equal clarity,
+that the alignment is partial: the constructs that span levels (ports, conduits,
+the bridge, the skip) have no single-stratum home, the runtime loop is
+single-stratum and so lives inside one heavy pack, and the packs come out uneven.
+
+The intended overall conclusion is the one the three-arm comparison invites: no
+arm dominates, and the honest reading is a hybrid - cut structure by stratum, keep
+the runtime loop as its own unit, and give stratum-spanning interfaces a
+first-class edge home. This arm's job was to measure the stratum cut cleanly and
+honestly, and the demonstration is meant to show that it did.
+
+
+PART FIVE - WHAT THIS DEMONSTRATION IS NOT
+
+It is not a benchmark score claim: the only figures are the ten percent mini
+regression, 40/40 and 12/12. It is not a modification of the platform: every step
+is read-only against a frozen PrologAI. It is not a new slice or a full connectome:
+it replicates the Wave 2 slice and projects to fifteen stratum packs. It is a plan
+of intent for showing a frozen measurement, nothing more.
+
+SPARC: this Demonstration is version 1, part of the six-file set for
+connectome-strata (Specification v1, Pseudocode v1, Architecture v1, Refinement v1,
+Completion v1, Demonstration v1).
