@@ -1,0 +1,225 @@
+CONNECTOME-STRATA PSEUDOCODE  (v1)
+
+Repository: connectome-strata
+Document: Pseudocode (file 2 of 6)
+Version: 1
+
+This document is the Pseudocode phase of the SPARC methodology (Specification,
+Pseudocode, Architecture, Refinement, Completion). It gives the logic of the
+repository's main flows in English-Readable-Code (ERC), the structured-English
+notation defined in the English-Readable-Code specification. The repository is
+FROZEN; this pseudocode describes the existing Prolog and proposes no change.
+
+How to read the notation. ERC has three tiers of operation.
+
+• PRIMITIVE operations translate one-to-one to code statements: assignment (SET),
+  arithmetic, comparison, list operations, and control flow (IF/THEN/ELSE, WHILE,
+  FOR EACH, RETURN, TRY/CATCH).
+
+• COMPOSITE operations expand deterministically into primitives; where a full
+  translation is useful it is spelled out.
+
+• LIBRARY operations map to a documented external interface and are referenced by
+  name, not expanded. The library operations used here are the platform's Lattice
+  and actor interfaces (lattice_open, lattice_put, lattice_take, lattice_await,
+  lattice_notify, cyclic_actor, cyclic_actor_stop) and the Causalontology 2.0.0
+  engine (causal_core_identify, co_validate_schema, causal_core_validate_semantics,
+  causal_core_classify, causal_core_skip_gaps, co_sign_record, co_verify_record,
+  co_keypair_from_seed, sha_hash, json_write_dict).
+
+A note on names. The Lattice is a shared coordination store. A phase cue is a
+numbered slot (phase_0, phase_1, phase_2). A stratum is a Causalontology level
+with an ordinal. A causal_relation_object is a Causalontology record that states
+one cause-and-effect claim.
+
+
+PROCEDURE run_slice(NLaps, EventLap, Rate):
+    LIBRARY open (or reuse) the one coordination nexus as Nexus via lattice_open.
+    STEP reset the nexus: retract every coordination fact and clear the hop trace.
+    STEP print the run banner naming the loop and its parameters.
+    STEP spawn three background region threads via cyclic_actor, one each on the
+         region_stratum internal ticks cortex, striatum, and thalamus; each thread
+         immediately blocks on its own numbered cue.
+    SET Seed to a state record holding lap=1, token=0, weight=0.0, prediction=0.0,
+         dopamine=0.0, cortisol=0.0, reward=0.0, n_laps=NLaps, rate=Rate,
+         event_lap=EventLap.
+    STEP post the phase-0 cue carrying Seed (this wakes the cortex and begins the loop).
+    TRY block up to thirty seconds for the done marker via lattice_await.
+        IF the done marker arrived THEN SET Outcome to done(FinalToken).
+        ELSE SET Outcome to stalled.
+    STEP stop the three region threads via cyclic_actor_stop, tolerating any already stopped.
+    STEP call run_slice_verdict(NLaps, Outcome) to prove or refute closure, giving Verdict.
+    IF Verdict is pass THEN halt with exit code zero.
+    ELSE halt with exit code one.
+
+
+PROCEDURE region_stratum_cortex_tick(Nexus):
+    GUARD block with no processor use until the phase-0 cue exists, then TAKE it
+          as State0 (this is neural_lattice_await_cue, which calls lattice_await
+          then lattice_take).
+    SET Lap to State0.lap.
+    SET NLaps to State0.n_laps.
+    SET Weight to State0.weight.
+    SET Token to State0.token plus one.
+    STEP record and print one hop: via lattice, region cortex, token Token.
+    IF Lap is greater than NLaps THEN
+        STEP narrate that the loop is at rest with the final token.
+        STEP post the done marker carrying Token (via lattice_put).
+    ELSE
+        SET Prediction to Weight (the learned value predicts the reward).
+        STEP narrate the lap header and the prediction.
+        SET State1 to State0 with token set to Token and prediction set to Prediction.
+        STEP post the phase-1 cue carrying State1 (hand the beat on by NUMBER, naming no region).
+
+
+PROCEDURE region_stratum_striatum_tick(Nexus):
+    GUARD block until the phase-1 cue exists, then TAKE it as State0.
+    SET Lap to State0.lap.
+    SET Prediction to State0.prediction.
+    SET Weight0 to State0.weight.
+    SET Cortisol to State0.cortisol.
+    SET Rate to State0.rate.
+    SET Token to State0.token plus one.
+    STEP determine Reward for this lap (a reliable cue-reward association: Reward is 1.0).
+    SET Dopamine to Reward minus Prediction (the reward-prediction-error).
+    STEP compute Weight by the three-factor rule: neurochemistry_plasticity(Weight0,
+         1.0, 1.0, Dopamine, Cortisol, Rate).
+    STEP record and print one hop: via lattice, region striatum, token Token.
+    STEP narrate the dopamine computation and the gated weight change.
+    SET State1 to State0 with weight=Weight, dopamine=Dopamine, reward=Reward, token=Token.
+    STEP post the phase-2 cue carrying State1.
+
+
+PROCEDURE region_stratum_thalamus_tick(Nexus):
+    GUARD block until the phase-2 cue exists, then TAKE it as State0.
+    SET Lap to State0.lap.
+    SET Token to State0.token plus one.
+    SET Cortisol0 to State0.cortisol.
+    SET EventLap to State0.event_lap.
+    STEP record and print one hop: via lattice, region thalamus, token Token.
+    STEP decide next-lap cortisol via region_stratum_thalamus_cortisol(Lap, EventLap, Cortisol0).
+    SET NextLap to Lap plus one.
+    SET State1 to State0 with token=Token, cortisol set, lap=NextLap.
+    STEP post the phase-0 cue carrying State1 (the beat returns to the origin slot).
+
+
+PROCEDURE region_stratum_thalamus_cortisol(Lap, EventLap, Old):
+    IF Lap is equal to EventLap THEN
+        STEP narrate the layer-skip banner: chronic social subordination at the
+             community level (ordinal 14) drives gene expression at the
+             macromolecular level (ordinal 4), one physical step, ten strata
+             skipped, no intervening mechanism.
+        RETURN 3.0 (a cortisol surge).
+    ELSE
+        RETURN Old multiplied by 0.9 (slow decay toward baseline).
+
+
+PROCEDURE neurochemistry_plasticity(Weight, Pre, Post, Dopamine, Cortisol, Rate):
+    This is a COMPOSITE operation expanded to primitives.
+    SET Suppression to 1.0 divided by (1.0 plus Cortisol).
+    SET Delta to Rate times Pre times Post times Dopamine times Suppression.
+    SET Raw to Weight plus Delta.
+    IF Raw is less than or equal to 0.0 THEN RETURN 0.0.
+    ELSE IF Raw is greater than or equal to 1.0 THEN RETURN 1.0.
+    ELSE RETURN Raw (the efficacy stays inside the unit interval).
+
+
+PROCEDURE mint_one_occurrent(Label, Category, StratumId):
+    Structure minting, used by each stratum pack to build a record at its level.
+    SET Body to a record with type "occurrent", label Label, category Category,
+        and stratum StratumId.
+    LIBRARY compute the content-addressed identifier Id via causal_core_identify,
+        which digests a canonical form of Body with SHA-256.
+    SET Out to Body with the field id set to Id.
+    RETURN Out.
+
+
+PROCEDURE community_stratum_skip_cro():
+    Build the layer-skipping cortisol relation, whose two ends live in two packs.
+    SET OSocial to community_stratum_social_occurrent() (this pack, ordinal 14).
+    SET OGene to macromolecular_stratum_gene_occurrent() (imported DOWN, ordinal 4).
+    LIBRARY mint the causal_relation_object with causes [OSocial.id], effects
+        [OGene.id], and the extra field skips set to true, stamping its id.
+    RETURN the relation.
+
+
+PROCEDURE community_stratum_skip_check():
+    SET SkipCro to community_stratum_skip_cro().
+    SET OSocial to community_stratum_social_occurrent().
+    SET OGene to macromolecular_stratum_gene_occurrent().
+    STEP build an identifier-keyed map of the two occurrents and of the two strata.
+    LIBRARY classify the relation via causal_core_classify, giving Class.
+    LIBRARY read the missing-mechanism gaps via causal_core_skip_gaps, giving Gaps.
+    RETURN Class and Gaps (expected: Class is skipping, Gaps is the empty list).
+
+
+PROCEDURE validate_structure_main():
+    STEP print the validation banner.
+    STEP assemble Records by concatenating the record lists of the five stratum
+         packs: macromolecular (3), cellular (1), synaptic (6), region (14),
+         community (4), for twenty-eight records.
+    SET SchemaFails to the empty list.
+    FOR EACH record(Name, Kind, Dict) in Records:
+        LIBRARY validate the schema via co_validate_schema(Dict, Kind), giving SchemaOk.
+        LIBRARY validate the local semantics via causal_core_validate_semantics(Dict, Kind),
+            giving SemReasons.
+        IF SchemaOk is true AND SemReasons is empty THEN print an ok line.
+        ELSE print a fail line and add Name to SchemaFails.
+    FOR EACH record in Records: write it to structure/<Name>.json via json_write_dict.
+    STEP call community_stratum_skip_check(); SET SkipOk to ok only if the class is
+         skipping and the gaps are empty.
+    STEP fetch the signed provenance assertion; LIBRARY verify it via
+         co_verify_record; SET SignOk to ok only if it verifies.
+    STEP print the per-kind coverage summary.
+    IF SchemaFails is empty AND SkipOk is ok AND SignOk is ok THEN
+        STEP announce success and halt with exit code zero.
+    ELSE
+        STEP announce failure, print each reason, and halt with exit code one.
+
+
+PROCEDURE run_slice_verdict(NLaps, Outcome):
+    STEP fetch the retained hop trace as Hops, in order.
+    SET Regions to the acting-region sequence from Hops.
+    SET Tokens to the token sequence from Hops.
+    SET ExpectedHops to three times NLaps plus one.
+    SET ExpectedRegions to cortex followed by NLaps repetitions of
+        [striatum, thalamus, cortex].
+    SET ExpectedTokens to the list one through ExpectedHops.
+    SET CortexCount to the count of cortex entries in Regions.
+    IF Outcome is done(_) AND the length of Hops equals ExpectedHops
+        AND Regions equals ExpectedRegions AND Tokens equals ExpectedTokens
+        AND CortexCount equals NLaps plus one THEN
+        RETURN pass.
+    ELSE
+        RETURN fail.
+
+
+TESTS (GIVEN / WHEN / THEN)
+
+TEST dopamine_is_reward_prediction_error:
+    GIVEN a reward of 1.0 and a perfect prediction of 1.0.
+    WHEN neurochemistry_dopamine is computed.
+    THEN the dopamine signal is 0.0; and with a prediction of 0.0 it is 1.0.
+
+TEST plasticity_is_bounded_and_gated:
+    GIVEN a weight of 0.0, a positive dopamine of 1.0, and no cortisol.
+    WHEN neurochemistry_plasticity is applied.
+    THEN the new weight is above 0.0 and at most 1.0; and with dopamine 0.0 the
+         weight does not change (the third factor gates learning).
+
+TEST clean_skip_across_two_packs:
+    GIVEN the cortisol relation, whose effect occurrent is imported down from the
+          macromolecular pack.
+    WHEN community_stratum_skip_check is run.
+    THEN the class is skipping and the gaps list is empty.
+
+TEST loop_closes_for_n_laps:
+    GIVEN N laps requested.
+    WHEN run_slice is run and run_slice_verdict is computed.
+    THEN there are three times N plus one hops, the tokens run one through that
+         number, the region sequence is cortex then N of striatum-thalamus-cortex,
+         and the verdict is pass.
+
+SPARC: this Pseudocode is version 1, part of the six-file set for connectome-strata
+(Specification v1, Pseudocode v1, Architecture v1, Refinement v1, Completion v1,
+Demonstration v1).

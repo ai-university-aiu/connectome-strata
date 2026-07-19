@@ -1,0 +1,224 @@
+CONNECTOME-STRATA ARCHITECTURE  (v1)
+
+Repository: connectome-strata
+Document: Architecture (file 3 of 6)
+Version: 1
+
+This document is the Architecture phase of the SPARC methodology (Specification,
+Pseudocode, Architecture, Refinement, Completion). It describes the structure of
+the repository: its packs and the strata they map to, the layer assignments, the
+substrate, the coordination through the Lattice, the interfaces between packs,
+and where the repository reuses the PrologAI platform read-only. The repository
+is FROZEN; this document describes the built structure and proposes no change.
+
+
+PART ONE - THE COMPONENTS
+
+The repository has eight packs. A pack is a self-contained code module with a
+manifest (pack.pl), a single Prolog module under prolog/, and a Prolog Unit test
+(PLUnit) suite under test/. Three packs are substrate; five are stratum packs.
+
+Substrate packs (not at any single stratum):
+
+• neural_lattice - the coordination substrate. It realises stigmergy for state
+  (leaving a mark in a shared medium) plus notification for reactivity (a region
+  blocks on a queue and is woken by a write). It imports only the platform's
+  Lattice library.
+
+• causal_grounding - the shared Causalontology 2.0.0 minting vocabulary. It holds
+  the fourteen helpers that stamp a content-addressed identifier, fold key-value
+  fields, and derive the deterministic signing key. It is reused verbatim so that
+  a record minted in any stratum pack has byte-identical content, and therefore a
+  byte-identical identifier, to the same record in the slice.
+
+• neurochemistry - the native dynamics. It holds the numeric laws of dopamine (a
+  reward-prediction-error), cortisol (a slow suppressive tone), and the
+  three-factor synaptic plasticity rule. By the grounding rule these are not
+  Causalontology records, so they have no stratum and are kept as substrate.
+
+Stratum packs (one per Causalontology stratum the slice touches):
+
+• macromolecular_stratum - Causalontology ordinal 4, the molecular level. It owns
+  the macromolecular stratum record, the glucocorticoid gene-expression
+  occurrent, and one token episode. Three records.
+
+• cellular_stratum - ordinal 6, the cellular level. The slice names this level but
+  places no construct at it, so this pack owns only its own stratum record. One
+  record. Its near-emptiness is a finding (uneven packs, STRATA-4).
+
+• synaptic_stratum - ordinal 7, the synaptic level. It owns the synaptic stratum
+  record, four synaptic occurrents (neurotransmitter release, dopamine release,
+  corticostriatal drive, weight change), and the corticostriatal transform
+  causal_relation_object (a purely synaptic cause-and-effect claim). Six records.
+
+• region_stratum - ordinal 9, the brain-region level. It is the heaviest pack:
+  fourteen structure records plus the whole runtime. It owns the stratum record,
+  four continuants (cortex, striatum, thalamus, substantia nigra pars compacta),
+  the region-level action-selection occurrent, the synaptic-plasticity
+  realizable, four ports, two conduits, and the bridge; and it holds the three
+  region ticks as internal sections.
+
+• community_stratum - ordinal 14, the community-and-society level, the coarsest
+  the slice touches. It owns the stratum record, the chronic-social-subordination
+  occurrent, the layer-skipping cortisol causal_relation_object, and the
+  Ed25519-signed provenance assertion over that relation. Four records.
+
+
+PART TWO - THE LAYER ASSIGNMENTS
+
+The platform's layer construct gives each pack a layer number and forbids any
+import from a lower layer up to a higher one. This repository assigns layers so
+that the five stratum packs track the Causalontology stratum ordinals. The rule
+is: pack layer equals the rank of the stratum ordinal plus one.
+
+    layer 0   neural_lattice          substrate (Lattice closure)
+    layer 0   causal_grounding        substrate (minting vocabulary)
+    layer 1   neurochemistry          un-stratified native dynamics
+    layer 2   macromolecular_stratum  stratum ordinal 4
+    layer 3   cellular_stratum        stratum ordinal 6
+    layer 4   synaptic_stratum        stratum ordinal 7
+    layer 5   region_stratum          stratum ordinal 9
+    layer 6   community_stratum       stratum ordinal 14
+
+Seven layers in total. Every real cross-pack edge runs from a coarser (higher)
+stratum down to a finer (lower) one, which is a downward edge the layer rule
+permits, so the ordinal order and the layer order agree and the layer order comes
+essentially for free from the data layer. One honest caveat: nothing in the
+platform binds a pack's declared layer to its stratum ordinal; the agreement is
+maintained by hand and unchecked (finding STRATA-3), and an isolated stratum such
+as cellular, imported by nobody, has a free layer choice the ordinal only fixes by
+convention.
+
+
+PART THREE - THE INTERFACES BETWEEN PACKS
+
+There are nine intra-repository import edges across the eight packs (roughly one
+and one tenth per pack), which sits between the loops arm (fewer) and the atomic
+arm (more). The edges are:
+
+• macromolecular_stratum imports causal_grounding.
+
+• cellular_stratum imports causal_grounding.
+
+• synaptic_stratum imports causal_grounding.
+
+• region_stratum imports causal_grounding, synaptic_stratum, neural_lattice, and
+  neurochemistry (four edges). It reaches DOWN to synaptic_stratum for the
+  occurrent and transform identifiers that its ports, conduits, and bridge
+  reference; it uses neural_lattice and neurochemistry for the runtime.
+
+• community_stratum imports causal_grounding and macromolecular_stratum (two
+  edges). The second is the cortisol SKIP: community (ordinal 14) reaches down to
+  macromolecular (ordinal 4) for the gene-expression effect. Because the skip
+  runs from a high ordinal to a low one, this extreme cross-stratal reference is
+  the cleanest downward edge in the whole arm.
+
+The coupling concentrates in the two packs that hold spanning constructs
+(region_stratum and community_stratum); the leaf stratum packs each import only
+the minting vocabulary.
+
+
+PART FOUR - THE LATTICE COORDINATION
+
+At runtime the three regions are three background threads spawned by the
+platform's cyclic_actor. They never call one another. All coordination passes
+through one shared Lattice nexus at a fixed address (a locus Uniform Resource
+Identifier, or locus URI). The protocol:
+
+• A region blocks on its own numbered phase cue with a Lattice await, using no
+  processor time until a write wakes it (notification, not busy-polling).
+
+• When a region acts, it takes its cue, does its work, and posts the next slot's
+  cue carrying the whole state snapshot. Exactly one phase cue exists at any
+  instant, so the ring is deterministic and only one region is ever active.
+
+• The state snapshot (lap, token, weight, prediction, cortisol, and so on) is the
+  stigmergic mark: state is shared by leaving it in the common medium, never by a
+  direct message naming a recipient.
+
+Because the three regions are co-stratal they live as internal sections of the
+one region_stratum pack, so the reentrant loop is intra-pack. The coupling
+checker therefore does intra-pack section analysis to confirm that no section's
+code calls or names another region.
+
+
+PART FIVE - THE PACK GRAPH (text diagram)
+
+An arrow (->) points from importer to imported, and every edge is downward. Each
+pack's layer number is shown in brackets. The tree is read by indentation: an
+indented line is imported by the pack above it.
+
+    community_stratum [6]
+        -> causal_grounding [0]
+        -> macromolecular_stratum [2]   (this edge is the cortisol SKIP)
+               -> causal_grounding [0]
+
+    region_stratum [5]
+        -> causal_grounding [0]
+        -> synaptic_stratum [4]
+               -> causal_grounding [0]
+        -> neural_lattice [0]
+        -> neurochemistry [1]
+
+    cellular_stratum [3]
+        -> causal_grounding [0]
+
+    substrate band (imports only the platform, no intra-repository edge):
+        neural_lattice [0]    -> platform library(lattice)
+        causal_grounding [0]  -> platform library(causal_core), library(signing)
+        neurochemistry [1]    -> pure arithmetic leaf, no import
+
+Runtime view of the region_stratum pack (one pack, three internal sections, all
+at ordinal 9):
+
+    region_stratum pack
+        internal section cortex    is the origin and re-entry point
+        internal section striatum  is the dopamine-gated plasticity site
+        internal section thalamus  is the relay that closes the loop
+        all three coordinate ONLY through the shared Lattice nexus, in the
+        cue order phase_0 -> phase_1 -> phase_2 -> phase_0, with zero
+        region-to-region calls
+
+
+PART SIX - REUSE OF THE PROLOGAI PLATFORM (read-only)
+
+The wider PrologAI platform is reused unmodified and read-only, resolved through
+the PROLOGAI_HOME environment variable (default: the local checkout at
+/home/ccaitwo/PrologAI). The bin/ scripts build a SWI-Prolog library path over
+the arm's eight packs plus the following platform packs and the conformance
+harness. The repository pins no platform commit hash of its own; it depends on
+the local checkout referenced by PROLOGAI_HOME.
+
+• library(lattice) - the shared coordination store with await and notify.
+
+• library(actors) - the cyclic_actor background threads.
+
+• library(causal_core) - the Causalontology 2.0.0 engine (content identity, kind
+  inference, semantic rules, the classification and skip-gap algorithms).
+
+• library(layer) - the strict layer-rule construct (its directory-scoped report
+  and check predicates), run over the arm by bin/check_layers.sh.
+
+• the causalontology_conformance harness under tests/ - the JSON-schema
+  interpreter (schema_check), the pure-Prolog Ed25519 signing layer (signing,
+  ed25519), and the seventeen schemas - used by the structure validator.
+
+Every gap the arm found in these platform pieces is recorded in LEDGER.md, never
+patched. This keeps the platform frozen and the measurement honest.
+
+
+PART SEVEN - REFLECTION ON THE ARCHITECTURE
+
+The architecture's defining decision is that the pack boundary is a data-layer
+kind (the stratum), not a code-only idea. The benefit is a genuine alignment: the
+layer order tracks the ordinals, structure minting localises by level, and the
+extreme layer-skip is a clean downward edge. The accepted cost is that constructs
+which span levels (ports, conduits, bridge, skip) have no single-stratum home and
+pile into the coarser stratum pack, and that the runtime loop, being
+single-stratum, lives entirely inside one heavy pack. The architecture makes both
+the benefit and the cost visible and checkable, which is exactly what a
+granularity experiment is for.
+
+SPARC: this Architecture is version 1, part of the six-file set for
+connectome-strata (Specification v1, Pseudocode v1, Architecture v1, Refinement
+v1, Completion v1, Demonstration v1).

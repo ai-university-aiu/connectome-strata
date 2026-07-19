@@ -1,0 +1,158 @@
+CONNECTOME-STRATA REFINEMENT  (v1)
+
+Repository: connectome-strata
+Document: Refinement (file 4 of 6)
+Version: 1
+
+This document is the Refinement phase of the SPARC methodology (Specification,
+Pseudocode, Architecture, Refinement, Completion). Refinement is the testing
+story: how the design was verified, the checkers and adversarial batteries that
+guard it, the gates it must pass, and the places where the design was tightened
+during the build. The repository is FROZEN; this document describes how the built
+code was verified and proposes no change.
+
+
+PART ONE - THE VERIFICATION STRATEGY
+
+The arm's whole value depends on one claim: that only the pack boundaries moved,
+and everything else - the behaviour, the twenty-eight records, the dynamics, the
+closure mechanism - was held constant. So the verification is built to PROVE that
+claim rather than merely assert it, and to catch any drift.
+
+Two proofs by byte-identity anchor the strategy.
+
+• The narrated trace of the loop is proven byte-identical to the Wave 2 slice and
+  to the atomic and loops arms, by a direct file comparison (diff). If a single
+  hop, token, or narration line differed, the comparison would fail. It does not.
+
+• The twenty-eight structure records are proven byte-identical to the slice, by
+  regenerating them from the five stratum packs and comparing every
+  content-addressed identifier. Because each identifier is a Secure Hash
+  Algorithm 256-bit (SHA-256) digest of a canonical form of the record, an equal
+  identifier is proof of equal content. Every identifier matched, so distributing
+  the minting by stratum cost the data nothing.
+
+
+PART TWO - THE FIVE GATES
+
+Each gate is a script under bin/ that exits zero on success. Together they are the
+acceptance criteria of the Specification made executable.
+
+Gate one - the loop runner (bin/run_slice.sh, driving bin/run_slice.pl). It ticks
+the reentrant loop for N laps and then proves closure, not by inspection but by
+four exact conditions checked in code: the hop count is three times N plus one;
+the token sequence is the strictly increasing list one through that number; the
+acting-region sequence is cortex followed by N repetitions of striatum, thalamus,
+cortex; and the cortex re-entered N plus one times. Only when all four hold, and
+the loop reported completion within a thirty-second bound, does the verdict read
+pass and the script exit zero. A stall (no completion within the bound) or any
+failed condition yields fail and a non-zero exit.
+
+Gate two - the layer checker (bin/check_layers.sh). It loads the platform's
+unmodified layer construct by its real path and runs its directory-scoped report
+and check over the arm's eight packs. It exits zero only when there is no upward
+edge. This gate also carries the arm's positive result: the report shows the five
+stratum packs at layers two through six tracking the Causalontology ordinals four,
+six, seven, nine, and fourteen.
+
+Gate three - the coupling checker (bin/check_no_coupling.sh). It proves the
+closure discipline: zero region-to-region references. Because the three regions
+are co-stratal and share one pack, this gate does intra-pack section analysis: it
+splits the region_stratum module at its internal-region markers into the cortex,
+striatum, and thalamus sections, strips comments so only live code is examined,
+and confirms that no section calls another region's predicate family or even
+names another region as a bare word. The structure-minting preamble, which
+legitimately names all three regions as continuants, sits before the first
+section marker and is correctly excluded.
+
+Gate four - the structure validator (bin/validate_structure.sh, driving
+bin/validate_structure.pl). It assembles the twenty-eight records from the five
+stratum packs and runs three families of check: each record against its
+JavaScript Object Notation (JSON) schema and the local semantic rules of
+Causalontology 2.0.0; the cortisol relation classified as a skipping relation with
+no missing-mechanism gap; and the Ed25519 provenance signature over that relation
+verified. It writes each record to structure/<name>.json and exits zero only when
+every check passes.
+
+Gate five - the test runner (bin/run_tests.sh). It runs each pack's in-pack PLUnit
+suite in its own SWI-Prolog process and exits zero only when all eight pass. Every
+pack ships a suite, so no pack can enter the repository without a test and rot
+unseen.
+
+
+PART THREE - THE ADVERSARIAL BATTERIES
+
+A check that always passes proves nothing. Two of the gates are deliberately
+tested against a planted violation, so a green result is meaningful.
+
+• The coupling checker is validated by injecting a cross-region call into one
+  section and confirming the checker reports a failure. This shows the
+  zero-reference result is earned, not vacuous. Its two independent rules (a
+  direct call into another region's predicate family, and the bare appearance of
+  another region's name in code) give defence in depth.
+
+• The closure verdict is adversarial by construction: it does not trust that the
+  loop ran, it recomputes the exact expected hop count, token sequence, region
+  sequence, and cortex re-entry count and demands equality. A loop that closed by
+  luck, in the wrong order, or one hop short would be refuted.
+
+The per-pack PLUnit suites add targeted adversarial cases. The neurochemistry
+suite checks that zero dopamine produces no weight change (the third factor truly
+gates learning) and that elevated cortisol shrinks the same update. The
+community_stratum suite checks that the cortisol relation, whose effect occurrent
+is imported down from a different pack, still classifies as a clean ten-stratum
+skip with no gap. The region_stratum suite checks that the heaviest pack exposes
+all three region ticks and mints exactly fourteen schema-valid records.
+
+
+PART FOUR - WHERE THE DESIGN WAS TIGHTENED
+
+The build surfaced one structural surprise that refined the design, and it became
+finding STRATA-1. The design expected the loop's three regions to sit at different
+levels, which would have made the closure cross-pack, as in the atomic arm. The
+slice's own data said otherwise: cortex, striatum, and thalamus are all brain
+regions at ordinal nine. One pack per stratum therefore placed all three region
+runtimes in one pack as internal sections, making the loop intra-pack, like the
+loops arm.
+
+The refinement this forced was to the coupling checker. A checker that compared
+one pack against another would have had nothing to compare, and would have passed
+vacuously. So the checker was rebuilt to split the single region_stratum module
+into its three internal sections and analyse across the section boundary. The
+zero-reference guarantee is thereby preserved even though the code cut did not
+separate the regions - and the checker was proven non-vacuous by the injected
+call described above.
+
+A second refinement was a path consequence, noted honestly rather than hidden.
+Because the region_stratum pack co-locates its structure records with its runtime,
+loading it to run the ticks pulls in the Lattice, and loading it to validate its
+records pulls in the grounding engine. So both the runner and the validator must
+carry the platform's causal_core and lattice packs and the conformance harness on
+their library path, even though the loop never mints a record. This is recorded as
+a re-touch of earlier findings (P5 and ATOMIC-4) rather than treated as new.
+
+
+PART FIVE - THE REGRESSION GUARD
+
+Beyond the arm's own gates, a mini regression confirms the wider platform still
+behaves. It is a ten percent spot-check run through the platform's harness: forty
+of forty on the Abstraction and Reasoning Corpus for Artificial General
+Intelligence version one (ARC-AGI-1), and twelve of twelve on version two
+(ARC-AGI-2). These are the honest figures, 40/40 and 12/12; they are a spot-check,
+not the full benchmark, and the full regression is deferred. A green mini
+regression is a guard against gross breakage, not a claim of the full score.
+
+
+PART SIX - REFLECTION ON THE REFINEMENT
+
+The refinement philosophy here is that a granularity experiment earns trust only
+if its invariants are proven, not asserted, and if its checks can fail. The
+byte-identity proofs pin the held-constant claim; the four-condition closure
+verdict and the injected-call coupling test make the two behavioural gates
+adversarial; and the one design surprise (co-stratal regions) was handled by
+tightening a checker rather than by bending the one decomposition rule. The result
+is a measurement whose green gates mean what they say.
+
+SPARC: this Refinement is version 1, part of the six-file set for connectome-strata
+(Specification v1, Pseudocode v1, Architecture v1, Refinement v1, Completion v1,
+Demonstration v1).
