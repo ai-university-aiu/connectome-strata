@@ -72,7 +72,7 @@ Step four - validate every structure record, the skip, and the signature.
     bin/validate_structure.sh
 
 This assembles the twenty-eight records from the five stratum packs and validates
-each against its Causalontology 2.0.0 JavaScript Object Notation (JSON) schema and
+each against its Causalontology 3.0.0 JavaScript Object Notation (JSON) schema and
 the local semantic rules, then confirms the cortisol relation classifies as a
 skipping relation with no missing-mechanism gap and the Ed25519 signature
 verifies. What to watch for: twenty-eight records valid, the skip finding correct,
@@ -105,7 +105,7 @@ PART THREE - WHAT THE DEMONSTRATION EXHIBITS
   cleanest downward edge.
 
 • Grounded structure with native dynamics: twenty-eight validated Causalontology
-  2.0.0 records for the structure, and un-stratified numeric laws for the dynamics.
+  3.0.0 records for the structure, and un-stratified numeric laws for the dynamics.
 
 • Honest measurement: gates that can fail (one is proven non-vacuous by an injected
   violation), byte-identity proofs against the slice, and five openly recorded

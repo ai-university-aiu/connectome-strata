@@ -69,7 +69,7 @@ Gate four - the structure validator (bin/validate_structure.sh, driving
 bin/validate_structure.pl). It assembles the twenty-eight records from the five
 stratum packs and runs three families of check: each record against its
 JavaScript Object Notation (JSON) schema and the local semantic rules of
-Causalontology 2.0.0; the cortisol relation classified as a skipping relation with
+Causalontology 3.0.0; the cortisol relation classified as a skipping relation with
 no missing-mechanism gap; and the Ed25519 provenance signature over that relation
 verified. It writes each record to structure/<name>.json and exits zero only when
 every check passes.

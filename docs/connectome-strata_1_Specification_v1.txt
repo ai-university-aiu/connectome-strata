@@ -30,7 +30,7 @@ cuts by a different rule:
 • One pack per Causalontology stratum.
 
 Causalontology is the data-structure language every part of the wider PrologAI
-platform speaks. A stratum, in Causalontology 2.0.0, is a named level of
+platform speaks. A stratum, in Causalontology 3.0.0, is a named level of
 organisation with an ordinal number - for example the molecular level, the
 synaptic level, the brain-region level, the community level. The stratum is
 already a first-class kind in the data layer. So this arm tests a sharp
@@ -72,12 +72,12 @@ runner or checker script under bin/ and is verifiable.
 
 • Requirement F4 - Reproduce the twenty-eight structure records byte for byte.
   The five stratum packs, between them, must mint the same twenty-eight
-  Causalontology 2.0.0 records as the slice, with byte-identical content and
+  Causalontology 3.0.0 records as the slice, with byte-identical content and
   therefore byte-identical content-addressed identifiers.
 
 • Requirement F5 - Validate every structure record. Each of the twenty-eight
   records must pass its JavaScript Object Notation (JSON) schema and the local
-  semantic rules of Causalontology 2.0.0. The layer-skipping cortisol relation
+  semantic rules of Causalontology 3.0.0. The layer-skipping cortisol relation
   must classify as a skipping relation with no missing-mechanism gap, and the
   Ed25519 provenance signature over that relation must verify.
 
@@ -95,8 +95,8 @@ PART THREE - NON-FUNCTIONAL REQUIREMENTS
 
 These are the qualities the repository must have, beyond the behaviours above.
 
-• Grounding in Causalontology 2.0.0. The STRUCTURE of the model is expressed as
-  Causalontology 2.0.0 records with content-addressed identity computed by a
+• Grounding in Causalontology 3.0.0. The STRUCTURE of the model is expressed as
+  Causalontology 3.0.0 records with content-addressed identity computed by a
   Secure Hash Algorithm 256-bit (SHA-256) digest over a canonical form. The
   DYNAMICS (the numeric laws of dopamine, cortisol, and synaptic plasticity) are
   deliberately kept native and ungrounded, because a rate constant or a

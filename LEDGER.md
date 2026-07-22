@@ -3,7 +3,7 @@
 **This Ledger is the deliverable.** connectome-strata is the STRATA arm — the
 finale — of the Wave 3 granularity experiment (see `WAVE_3_DESIGN_v1.txt`). It
 re-decomposes the Wave 2 slice under one rule — **one pack per Causalontology
-stratum** — holding the behaviour, the twenty-eight Causalontology 2.0.0 records,
+stratum** — holding the behaviour, the twenty-eight Causalontology 3.0.0 records,
 the dynamics, and the closure mechanism constant. This arm is the interesting one
 because the stratum is already a first-class kind in the DATA layer, so it tests
 a sharp question: **is the data layer's own level boundary also the right CODE
