@@ -17,7 +17,7 @@ PART ONE - DELIVERED STATUS
 connectome-strata is delivered and complete as the third and final arm (Wave 3c,
 the strata arm) of the Wave 3 granularity experiment. It re-decomposes the Wave 2
 vertical slice under one rule - one pack per Causalontology stratum - holding the
-behaviour, the twenty-eight Causalontology 2.0.0 records, the dynamics, and the
+behaviour, the twenty-eight Causalontology 3.0.0 records, the dynamics, and the
 closure mechanism constant. The deliverable is the finding, recorded in LEDGER.md
 (the five STRATA findings) and COMPARISON.md (the three-way rubric), with the code
 as the evidence that makes the finding real.
@@ -32,7 +32,7 @@ What was built:
   through six tracking the Causalontology ordinals four, six, seven, nine, and
   fourteen.
 
-• Twenty-eight Causalontology 2.0.0 structure records, written to structure/, with
+• Twenty-eight Causalontology 3.0.0 structure records, written to structure/, with
   three in macromolecular, one in cellular, six in synaptic, fourteen in region,
   and four in community.
 
@@ -57,7 +57,7 @@ All gates are green.
   by catching an injected cross-region call. No busy-polling. Exit zero.
 
 • Structure validation (bin/validate_structure.sh): all twenty-eight records valid
-  against their Causalontology 2.0.0 JavaScript Object Notation (JSON) schemas and
+  against their Causalontology 3.0.0 JavaScript Object Notation (JSON) schemas and
   the local semantic rules; the cortisol relation classifies as a skipping
   relation with no missing-mechanism gap; the Ed25519 provenance signature
   verifies. Exit zero.
@@ -81,12 +81,12 @@ the arm's eight packs plus these platform pieces:
 
 • library(lattice) and library(actors) for coordination and the cyclic actors.
 
-• library(causal_core) for the Causalontology 2.0.0 engine.
+• library(causal_core) for the Causalontology 3.0.0 engine.
 
 • library(layer) for the strict layer-rule construct.
 
 • the causalontology_conformance harness under tests/ for the JSON-schema
-  interpreter, the pure-Prolog Ed25519 signing layer, and the seventeen schemas.
+  interpreter, the pure-Prolog Ed25519 signing layer, and the eighteen schemas.
 
 The repository does not hardcode a platform commit hash of its own; it depends on
 the local checkout named by PROLOGAI_HOME. The connectome-strata repository itself

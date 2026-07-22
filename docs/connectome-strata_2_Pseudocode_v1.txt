@@ -22,7 +22,7 @@ How to read the notation. ERC has three tiers of operation.
 • LIBRARY operations map to a documented external interface and are referenced by
   name, not expanded. The library operations used here are the platform's Lattice
   and actor interfaces (lattice_open, lattice_put, lattice_take, lattice_await,
-  lattice_notify, cyclic_actor, cyclic_actor_stop) and the Causalontology 2.0.0
+  lattice_notify, cyclic_actor, cyclic_actor_stop) and the Causalontology 3.0.0
   engine (causal_core_identify, co_validate_schema, causal_core_validate_semantics,
   causal_core_classify, causal_core_skip_gaps, co_sign_record, co_verify_record,
   co_keypair_from_seed, sha_hash, json_write_dict).

@@ -25,7 +25,7 @@ Substrate packs (not at any single stratum):
   blocks on a queue and is woken by a write). It imports only the platform's
   Lattice library.
 
-• causal_grounding - the shared Causalontology 2.0.0 minting vocabulary. It holds
+• causal_grounding - the shared Causalontology 3.0.0 minting vocabulary. It holds
   the fourteen helpers that stamp a content-addressed identifier, fold key-value
   fields, and derive the deterministic signing key. It is reused verbatim so that
   a record minted in any stratum pack has byte-identical content, and therefore a
@@ -193,7 +193,7 @@ the local checkout referenced by PROLOGAI_HOME.
 
 • library(actors) - the cyclic_actor background threads.
 
-• library(causal_core) - the Causalontology 2.0.0 engine (content identity, kind
+• library(causal_core) - the Causalontology 3.0.0 engine (content identity, kind
   inference, semantic rules, the classification and skip-gap algorithms).
 
 • library(layer) - the strict layer-rule construct (its directory-scoped report
@@ -201,7 +201,7 @@ the local checkout referenced by PROLOGAI_HOME.
 
 • the causalontology_conformance harness under tests/ - the JSON-schema
   interpreter (schema_check), the pure-Prolog Ed25519 signing layer (signing,
-  ed25519), and the seventeen schemas - used by the structure validator.
+  ed25519), and the eighteen schemas - used by the structure validator.
 
 Every gap the arm found in these platform pieces is recorded in LEDGER.md, never
 patched. This keeps the platform frozen and the measurement honest.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# validate_structure.sh — validate the arm's Causalontology 2.0.0 structure records.
+# validate_structure.sh — validate the arm's Causalontology 3.0.0 structure records.
 #
 # Assembles the library path over the arm packs plus the PrologAI packs and
 # conformance-harness the arm REUSES UNMODIFIED. The validator imports all five
@@ -23,7 +23,7 @@ fi
 # Start the library path with every arm pack's prolog directory.
 LIB=""
 for d in packs/*/prolog; do LIB="$LIB -p library=$d"; done
-# Add PrologAI's causal_core engine pack (the 2.0.0 vocabulary).
+# Add PrologAI's causal_core engine pack (the 3.0.0 vocabulary).
 LIB="$LIB -p library=$PROLOGAI_HOME/packs/causal_core/prolog"
 # Add PrologAI's Lattice pack — region_stratum (which carries structure records) imports it.
 LIB="$LIB -p library=$PROLOGAI_HOME/packs/lattice/prolog"

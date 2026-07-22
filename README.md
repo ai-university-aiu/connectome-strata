@@ -5,7 +5,7 @@
 This repository is the **strata arm** — the third and final arm — of the Wave 3
 granularity experiment (see `WAVE_3_DESIGN_v1.txt`). Its one-sentence purpose:
 **to measure the decomposition rule "one pack per stratum," where the code
-boundary is set by the Causalontology 2.0.0 stratum kind, and to answer whether
+boundary is set by the Causalontology 3.0.0 stratum kind, and to answer whether
 the data layer's own level boundary is also the right CODE boundary.** The walls
 it hit — and the one place it clearly succeeds — live in [`LEDGER.md`](LEDGER.md);
 the three-way side-by-side measurement against the atomic and loops arms lives in
@@ -28,7 +28,7 @@ Everything else is held constant and PROVEN so:
   sequence cortex then N×[striatum, thalamus, cortex], the cortex re-entering N
   times). The narrated trace is **byte-identical** to the slice and both prior
   arms (verified by `diff`).
-- **The data layer** — the SAME twenty-eight Causalontology 2.0.0 records, proven
+- **The data layer** — the SAME twenty-eight Causalontology 3.0.0 records, proven
   **byte-identical** to the slice's `structure/` by regenerating from the five
   stratum packs and `diff`-ing (every content-addressed id matched).
 - **The dynamics** — the same dopamine RPE, cortisol suppression, and three-factor
@@ -86,7 +86,7 @@ bin/check_layers.sh
 #    (All three regions are at ordinal 9, so they share one pack; the check does intra-pack section analysis.)
 bin/check_no_coupling.sh
 
-# 4. Validate every Causalontology 2.0.0 structure record + the skip finding + the signature.
+# 4. Validate every Causalontology 3.0.0 structure record + the skip finding + the signature.
 #    (bin/validate_structure.sh is the wrapper; it runs the validator bin/validate_structure.pl.)
 bin/validate_structure.sh
 

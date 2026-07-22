@@ -1,9 +1,9 @@
-/*  connectome-strata — the Causalontology 2.0.0 structure validator.
+/*  connectome-strata — the Causalontology 3.0.0 structure validator.
 
     Assembles the same twenty-eight records from the FIVE STRATUM packs that each
     mint the constructs at their level (macromolecular, cellular, synaptic,
     region, community), then validates every record against PrologAI's UNMODIFIED
-    Causalontology 2.0.0 conformance engine:
+    Causalontology 3.0.0 conformance engine:
       - co_validate_schema/4  — the record satisfies its kind's JSON schema.
       - causal_core_validate_semantics/3 — the local semantic rules hold.
       - the cortisol CRO classifies as SKIPPING with NO skip-gap (skips:true) —
@@ -48,7 +48,7 @@ validate_structure_records(Records) :-
 % -- validate_structure_main/0: run every check, write artifacts, and halt with the verdict.
 validate_structure_main :-
     % Print the banner.
-    format("~n== connectome-strata :: Causalontology 2.0.0 structure validation ==~n~n", []),
+    format("~n== connectome-strata :: Causalontology 3.0.0 structure validation ==~n~n", []),
     % Assemble the full labelled record list from the five stratum packs.
     validate_structure_records(Records),
     % Schema- and semantics-validate every record, collecting failures.
@@ -65,7 +65,7 @@ validate_structure_main :-
     ( SchemaFails == [], SkipOk == ok, SignOk == ok
     % Everything passed: announce success and exit 0.
     ->  length(Records, N),
-        format("~nVALIDATION: PASS -- ~w records valid against Causalontology 2.0.0; skip finding and signature verified.~n~n", [N]),
+        format("~nVALIDATION: PASS -- ~w records valid against Causalontology 3.0.0; skip finding and signature verified.~n~n", [N]),
         halt(0)
     % Something failed: announce and exit 1.
     ;   format("~nVALIDATION: FAIL~n", []),
